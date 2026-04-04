@@ -62,3 +62,14 @@ lefthook install                                       # Install git hooks
 5. `exceptions.py` defines domain-specific exceptions
 
 Tools should be thin wrappers that delegate to the client. Keep business logic in the client.
+
+## Development Workflow
+
+- **New features:** Use `/feature-dev:feature-dev` if available — it handles codebase
+  analysis, architecture planning, and guided implementation.
+- **Branching:** Create a feature branch (`feat/<description>`) before starting work.
+- **TDD:** Write tests alongside code. Run `uv run pytest -v` early and often.
+- **Review cycle:** Run `/pr-review-toolkit:review-pr code` before every commit.
+  Run `/pr-review-toolkit:review-pr all parallel` before pushing or creating a PR.
+- **Releases:** Automated via release-please. Conventional commits on main trigger
+  a release PR that bumps the version in pyproject.toml and creates a GitHub release.
