@@ -73,7 +73,7 @@ Tools should be thin wrappers that delegate to the client. Keep business logic i
 - **Review cycle:** Run `/pr-review-toolkit:review-pr code` before every commit.
   Run `/pr-review-toolkit:review-pr all parallel` before pushing or creating a PR.
 - **Merging:** PRs auto-merge to main once CI passes (squash merge). After merge,
-  run `/commit-commands:clean_gone` to clean up local branches, then ask Steve
-  if he wants to cut a release.
+  run `/commit-commands:clean_gone` to clean up local branches, then ask the user
+  if they want to cut a release.
 - **Releases:** Tag-triggered. Push a `v*` tag to create a GitHub release with
   an auto-generated changelog (`git tag v0.2.0 && git push origin v0.2.0`).
