@@ -5,7 +5,8 @@
 [![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A local [MCP](https://modelcontextprotocol.io/) server that gives Claude native, tool-level access to **Gmail**. Runs locally via stdio transport — all tokens and credentials stay on your machine.
+A local [MCP](https://modelcontextprotocol.io/) server that gives Claude native, tool-level access
+to **Gmail**. Runs locally via stdio transport — all tokens and credentials stay on your machine.
 
 ## Prerequisites
 
@@ -20,13 +21,13 @@ A local [MCP](https://modelcontextprotocol.io/) server that gives Claude native,
 git clone https://github.com/stevesimpson418/gmail-mcp-server.git
 cd gmail-mcp-server
 
-# Install dependencies
+# Install dependencies (creates .venv/ in the project directory)
 uv sync
-
-# Configure your credentials
-cp .env.example .env
-# Edit .env — see setup instructions below
 ```
+
+> **New to uv?** `uv sync` reads `pyproject.toml`, creates a `.venv/` virtualenv inside the
+> project folder, and installs all dependencies into it. You don't need to activate it —
+> `uv run <command>` handles that automatically.
 
 ## Setting up Gmail
 
@@ -38,43 +39,41 @@ cp .env.example .env
 4. Run the OAuth consent flow once to generate a token:
 
 ```bash
-uv run python -c "
-from gmail_mcp.auth import GmailAuth
-auth = GmailAuth('credentials/gmail_credentials.json', 'credentials/token.json')
-auth.get_service()
-print('Token saved to credentials/token.json')
-"
+uv run gmail-mcp-auth
 ```
 
-A browser window will open — sign in and grant permissions. The token auto-refreshes after this.
+A browser window will open — sign in and grant Gmail permissions. The token is saved to
+`credentials/token.json` and auto-refreshes after this.
 
-Update your `.env`:
+To use custom paths:
 
-```text
-GMAIL_CREDENTIALS_PATH=credentials/gmail_credentials.json
-GMAIL_TOKEN_PATH=credentials/token.json
+```bash
+uv run gmail-mcp-auth --credentials /path/to/creds.json --token /path/to/token.json
 ```
 
 ## Adding to Claude Desktop
 
 Add the following to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS).
 
-> **Note:** Use the absolute path to the Python binary inside your virtualenv for `command`.
+> **Tip:** Run `uv run which python` from the project directory to get the exact path for `command`.
 
 ```json
 {
   "mcpServers": {
     "gmail": {
-      "command": "/absolute/path/to/.venv/bin/python",
+      "command": "/Users/you/gmail-mcp-server/.venv/bin/python",
       "args": ["-m", "gmail_mcp.server"],
       "env": {
-        "GMAIL_CREDENTIALS_PATH": "/absolute/path/to/credentials/gmail_credentials.json",
-        "GMAIL_TOKEN_PATH": "/absolute/path/to/credentials/token.json"
+        "GMAIL_CREDENTIALS_PATH": "/Users/you/gmail-mcp-server/credentials/gmail_credentials.json",
+        "GMAIL_TOKEN_PATH": "/Users/you/gmail-mcp-server/credentials/token.json"
       }
     }
   }
 }
 ```
+
+The `env` block tells the server where to find your credentials at runtime. No `.env` file is
+needed — the config passes these values directly.
 
 Restart Claude Desktop after saving. You should see all Gmail tools in the tools menu.
 
@@ -86,16 +85,31 @@ Add to your Claude Code settings (`.claude/settings.json` or global):
 {
   "mcpServers": {
     "gmail": {
-      "command": "/absolute/path/to/.venv/bin/python",
+      "command": "/Users/you/gmail-mcp-server/.venv/bin/python",
       "args": ["-m", "gmail_mcp.server"],
       "env": {
-        "GMAIL_CREDENTIALS_PATH": "/absolute/path/to/credentials/gmail_credentials.json",
-        "GMAIL_TOKEN_PATH": "/absolute/path/to/credentials/token.json"
+        "GMAIL_CREDENTIALS_PATH": "/Users/you/gmail-mcp-server/credentials/gmail_credentials.json",
+        "GMAIL_TOKEN_PATH": "/Users/you/gmail-mcp-server/credentials/token.json"
       }
     }
   }
 }
 ```
+
+## Updating
+
+To pull the latest version and update dependencies:
+
+```bash
+cd /path/to/gmail-mcp-server
+git pull
+uv sync
+```
+
+Restart Claude Desktop or reload Claude Code after updating.
+
+If a new version changes OAuth scopes, you'll need to re-consent by running
+`uv run gmail-mcp-auth` again.
 
 ## Available Tools
 
@@ -170,6 +184,38 @@ uv run ruff format src/ tests/
 # Install git hooks
 lefthook install
 ```
+
+### Local `.env` file
+
+When running the server manually outside Claude Desktop/Code (e.g., for development or
+debugging), you can create a `.env` file in the project root so the server picks up
+credential paths without passing environment variables:
+
+```text
+GMAIL_CREDENTIALS_PATH=credentials/gmail_credentials.json
+GMAIL_TOKEN_PATH=credentials/token.json
+```
+
+This is only needed for local development. The Claude Desktop and Claude Code configs
+pass these values directly via the `env` block.
+
+### Packaging & Distribution
+
+This server is currently distributed as source via git. To install:
+
+```bash
+git clone https://github.com/stevesimpson418/gmail-mcp-server.git
+cd gmail-mcp-server
+uv sync
+```
+
+This is the standard distribution model for local-stdio MCP servers today. The project is
+already configured for wheel builds via hatchling, so future distribution options include:
+
+- **PyPI** — publish to PyPI, then install with `uv tool install gmail-mcp-server` or
+  `pip install gmail-mcp-server`. Would require adding a publish workflow to CI.
+- **uvx** — once on PyPI, `uvx gmail-mcp-server` runs the server without cloning the repo.
+  Claude Desktop/Code config would point to the uvx-managed binary instead of a local `.venv`.
 
 ## License
 

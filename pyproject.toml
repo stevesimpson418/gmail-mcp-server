@@ -18,6 +18,7 @@ dependencies = [
 
 [project.scripts]
 gmail-mcp = "gmail_mcp.server:main"
+gmail-mcp-auth = "gmail_mcp.setup:main"
 
 [dependency-groups]
 dev = [
