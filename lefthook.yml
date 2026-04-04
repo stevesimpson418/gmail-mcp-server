@@ -1,0 +1,34 @@
+# lefthook.yml — Git hooks for Python projects (uv + ruff + markdownlint + shellcheck)
+# Install hooks: lefthook install
+# Run manually:  lefthook run pre-commit
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: ruff format
+      glob: "*.py"
+      run: ruff format {staged_files}
+      stage_fixed: true
+
+    - name: ruff check
+      glob: "*.py"
+      run: ruff check --fix {staged_files}
+      stage_fixed: true
+
+    - name: markdownlint
+      glob: "*.md"
+      run: markdownlint-cli2 {staged_files}
+
+    - name: shellcheck
+      glob: "*.sh"
+      run: shellcheck {staged_files}
+
+    - name: shfmt
+      glob: "*.sh"
+      run: shfmt -d {staged_files}
+      stage_fixed: true
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: commitlint --edit {1}

@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+
+# Ruff
+.ruff_cache/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+
+# OS
+.DS_Store
+
+# Node
+node_modules/
+
+# Lefthook local overrides
+lefthook-local.yml
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OAuth credentials and tokens
+credentials/
