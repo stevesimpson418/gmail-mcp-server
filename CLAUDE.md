@@ -68,8 +68,12 @@ Tools should be thin wrappers that delegate to the client. Keep business logic i
 - **New features:** Use `/feature-dev:feature-dev` if available — it handles codebase
   analysis, architecture planning, and guided implementation.
 - **Branching:** Create a feature branch (`feat/<description>`) before starting work.
+  Never commit directly to main — branch protection enforces PRs.
 - **TDD:** Write tests alongside code. Run `uv run pytest -v` early and often.
 - **Review cycle:** Run `/pr-review-toolkit:review-pr code` before every commit.
   Run `/pr-review-toolkit:review-pr all parallel` before pushing or creating a PR.
+- **Merging:** PRs auto-merge to main once CI passes (squash merge). After merge,
+  run `/commit-commands:clean_gone` to clean up local branches, then ask Steve
+  if he wants to cut a release.
 - **Releases:** Tag-triggered. Push a `v*` tag to create a GitHub release with
   an auto-generated changelog (`git tag v0.2.0 && git push origin v0.2.0`).
