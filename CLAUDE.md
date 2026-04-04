@@ -71,5 +71,5 @@ Tools should be thin wrappers that delegate to the client. Keep business logic i
 - **TDD:** Write tests alongside code. Run `uv run pytest -v` early and often.
 - **Review cycle:** Run `/pr-review-toolkit:review-pr code` before every commit.
   Run `/pr-review-toolkit:review-pr all parallel` before pushing or creating a PR.
-- **Releases:** Automated via release-please. Conventional commits on main trigger
-  a release PR that bumps the version in pyproject.toml and creates a GitHub release.
+- **Releases:** Tag-triggered. Push a `v*` tag to create a GitHub release with
+  an auto-generated changelog (`git tag v0.2.0 && git push origin v0.2.0`).
