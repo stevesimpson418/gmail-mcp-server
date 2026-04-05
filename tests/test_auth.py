@@ -237,6 +237,6 @@ class TestSaveToken:
 
 
 class TestScopes:
-    def test_scopes_include_modify_and_send(self):
-        assert "https://www.googleapis.com/auth/gmail.modify" in SCOPES
-        assert "https://www.googleapis.com/auth/gmail.send" in SCOPES
+    def test_scopes_include_only_modify(self):
+        """gmail.modify is the sole scope — it covers read, modify, send, and drafts."""
+        assert SCOPES == ["https://www.googleapis.com/auth/gmail.modify"]

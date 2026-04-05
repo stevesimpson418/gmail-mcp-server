@@ -31,19 +31,79 @@ uv sync
 
 ## Setting up Gmail
 
-1. Create a [Google Cloud project](https://console.cloud.google.com/)
-2. Enable the **Gmail API**: APIs & Services > Library > Gmail API
-3. Create **OAuth 2.0 credentials**: APIs & Services > Credentials > Create > OAuth client ID
-   - Application type: **Desktop app**
-   - Download the JSON file and save it as `credentials/gmail_credentials.json`
-4. Run the OAuth consent flow once to generate a token:
+### 1. Create a Google Cloud project
+
+Go to the [Google Cloud Console](https://console.cloud.google.com/) and create a new project
+(or select an existing one).
+
+### 2. Enable the Gmail API
+
+Navigate to **APIs & Services > Library**, search for **Gmail API**, and click **Enable**.
+
+### 3. Configure the OAuth consent screen
+
+Before creating credentials, Google requires you to configure the OAuth consent screen. Go to
+**APIs & Services > OAuth consent screen** (or **Google Auth Platform** if prompted).
+
+1. Click **Get Started** (or **Configure Consent Screen**)
+2. Fill in the required fields:
+   - **App name** — a name for your own reference (e.g. "Gmail MCP Server")
+   - **User support email** — your email address
+3. Select an **Audience**:
+   - **Internal** — only available if you're in a Google Workspace organisation
+   - **External** — select this for personal Google accounts. The app starts in **testing
+     mode**, which is fine for personal use — you just need to add yourself as a test user
+4. **Contact information** — your email (Google uses this to notify you of project changes)
+5. Click **Save**
+
+> **About testing mode:** External apps in testing mode are limited to users you explicitly
+> add to the test user list. This is perfectly fine for a local MCP server — you only need
+> your own account. Tokens for test users expire after 7 days, requiring re-consent. If this
+> becomes inconvenient, you can publish the app (no verification needed for sensitive scopes
+> used with fewer than 100 users in testing mode, but publishing removes the 7-day expiry).
+
+### 4. Add test users
+
+Go to **APIs & Services > OAuth consent screen > Test users** (or **Audience** in the new
+Google Auth Platform UI) and add your Google account email address.
+
+### 5. Add OAuth scopes
+
+Go to **APIs & Services > OAuth consent screen > Scopes** (or **Data Access** in the new UI)
+and add the following scope:
+
+<!-- markdownlint-disable MD013 -->
+
+| Scope | Why it's needed |
+|-------|----------------|
+| `https://www.googleapis.com/auth/gmail.modify` | Read messages, modify labels (archive, star, mark read/unread, apply/remove labels), manage drafts, send emails, and move messages to trash. This is the minimum single scope that covers all server operations — narrower scopes like `gmail.readonly` or `gmail.send` don't cover label modification or trash. |
+
+<!-- markdownlint-enable MD013 -->
+
+This server does **not** request `mail.google.com` (full unrestricted access) — `gmail.modify`
+is scoped to read/write operations and cannot permanently delete messages.
+
+### 6. Create OAuth 2.0 credentials
+
+1. Go to **APIs & Services > Credentials**
+2. Click **Create Credentials > OAuth client ID**
+3. Application type: **Desktop app**
+4. Give it a name for your own reference (e.g. "Gmail MCP — My Laptop")
+5. Click **Create**, then **Download JSON**
+6. Save the file as `credentials/gmail_credentials.json` in this project
+
+> **Security note:** The `credentials/` directory is gitignored — your credentials and tokens
+> will never be committed to the repository.
+
+### 7. Run the OAuth consent flow
 
 ```bash
 uv run gmail-mcp-auth
 ```
 
-A browser window will open — sign in and grant Gmail permissions. The token is saved to
-`credentials/token.json` and auto-refreshes after this.
+A browser window will open — sign in with the Google account you added as a test user and
+grant the requested permissions. The token is saved to `credentials/token.json` and
+auto-refreshes after this.
 
 To use custom paths:
 
