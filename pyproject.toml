@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "A local MCP server that gives Claude native tool-level access to Gmail"
 requires-python = ">=3.14"
 license = "MIT"
+readme = "README.md"
 dependencies = [
     "fastmcp>=2.0.0",
     "python-dotenv>=1.0.0",
@@ -15,6 +16,11 @@ dependencies = [
     "google-auth-oauthlib>=1.2.0",
     "google-auth>=2.25.0",
 ]
+
+[project.urls]
+Repository = "https://github.com/stevesimpson418/gmail-mcp-server"
+Issues = "https://github.com/stevesimpson418/gmail-mcp-server/issues"
+Changelog = "https://github.com/stevesimpson418/gmail-mcp-server/releases"
 
 [project.scripts]
 gmail-mcp = "gmail_mcp.server:main"
