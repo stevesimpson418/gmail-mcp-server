@@ -14,10 +14,19 @@ from googleapiclient.discovery import Resource, build
 
 logger = logging.getLogger(__name__)
 
-# gmail.modify: read + label/archive/trash; gmail.send: compose and send
+# gmail.modify is the minimum single scope that covers all server operations:
+#   - Read:   messages.list, messages.get, threads.get, messages.attachments.get
+#   - Modify: messages.batchModify (archive, label, read/unread, star, important)
+#   - Trash:  messages.trash
+#   - Labels: labels.list, labels.create
+#   - Send:   messages.send, drafts.create, drafts.send
+#
+# Narrower scopes (gmail.readonly, gmail.labels, gmail.compose, gmail.send) cannot
+# cover messages.batchModify or messages.trash — those require gmail.modify or the
+# full-access mail.google.com scope. Since gmail.modify is needed anyway and it
+# includes all other operations, a single scope is both sufficient and minimal.
 SCOPES = [
     "https://www.googleapis.com/auth/gmail.modify",
-    "https://www.googleapis.com/auth/gmail.send",
 ]
 
 
