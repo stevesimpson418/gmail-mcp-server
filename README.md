@@ -142,7 +142,7 @@ Restart Claude Desktop after saving. You should see all Gmail tools in the tools
 Use the `claude mcp add` command to register the server. This works from any directory.
 
 ```bash
-claude mcp add gmail-mcp-server \
+claude mcp add --scope user gmail-mcp-server \
   --transport stdio \
   --env GMAIL_CREDENTIALS_PATH=/path/to/gmail-mcp-server/credentials/gmail_credentials.json \
   --env GMAIL_TOKEN_PATH=/path/to/gmail-mcp-server/credentials/token.json \
@@ -154,9 +154,10 @@ Replace `/path/to/gmail-mcp-server` with the actual path where you cloned the re
 > **Tip:** Run `uv run which python` from the project directory to get the exact `.venv/bin/python`
 > path for the command.
 
-By default this saves to `~/.claude.json` (user scope — available across all projects). To scope
-it to a single project instead, add `--scope project` which writes to `.mcp.json` in your
-project root.
+The `--scope user` flag saves to `~/.claude.json` so the server is available across all projects.
+Without it, the command defaults to local scope (tied to whatever directory you run it from).
+To scope it to a single project instead, use `--scope project` which writes to `.mcp.json` in
+the project root.
 
 To verify the server is registered:
 
