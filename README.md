@@ -137,24 +137,39 @@ needed — the config passes these values directly.
 
 Restart Claude Desktop after saving. You should see all Gmail tools in the tools menu.
 
-## Adding to Claude Code
+## Adding to Claude Code CLI
 
-Add to your Claude Code settings (`.claude/settings.json` or global):
+Use the `claude mcp add` command to register the server. This works from any directory.
 
-```json
-{
-  "mcpServers": {
-    "gmail": {
-      "command": "/Users/you/gmail-mcp-server/.venv/bin/python",
-      "args": ["-m", "gmail_mcp.server"],
-      "env": {
-        "GMAIL_CREDENTIALS_PATH": "/Users/you/gmail-mcp-server/credentials/gmail_credentials.json",
-        "GMAIL_TOKEN_PATH": "/Users/you/gmail-mcp-server/credentials/token.json"
-      }
-    }
-  }
-}
+```bash
+claude mcp add --scope user gmail-mcp-server \
+  --transport stdio \
+  --env GMAIL_CREDENTIALS_PATH=/path/to/gmail-mcp-server/credentials/gmail_credentials.json \
+  --env GMAIL_TOKEN_PATH=/path/to/gmail-mcp-server/credentials/token.json \
+  -- /path/to/gmail-mcp-server/.venv/bin/python -m gmail_mcp.server
 ```
+
+Replace `/path/to/gmail-mcp-server` with the actual path where you cloned the repo.
+
+> **Tip:** Run `uv run which python` from the project directory to get the exact `.venv/bin/python`
+> path for the command.
+
+The `--scope user` flag saves to `~/.claude.json` so the server is available across all projects.
+Without it, the command defaults to local scope (tied to whatever directory you run it from).
+To scope it to a single project instead, use `--scope project` which writes to `.mcp.json` in
+the project root.
+
+To verify the server is registered:
+
+```bash
+claude mcp list
+```
+
+Restart Claude Code after adding. The Gmail tools should appear in the `/mcp` menu.
+
+> **Note:** Claude Code CLI uses a different configuration from Claude Desktop. The `claude mcp add`
+> command is the recommended way to register MCP servers — do not add them to
+> `~/.claude/settings.json` as that file is used for permissions and hooks only.
 
 ## Updating
 
@@ -166,7 +181,7 @@ git pull
 uv sync
 ```
 
-Restart Claude Desktop or reload Claude Code after updating.
+Restart Claude Desktop or Claude Code CLI after updating.
 
 If a new version changes OAuth scopes, you'll need to re-consent by running
 `uv run gmail-mcp-auth` again.
@@ -256,7 +271,7 @@ GMAIL_CREDENTIALS_PATH=credentials/gmail_credentials.json
 GMAIL_TOKEN_PATH=credentials/token.json
 ```
 
-This is only needed for local development. The Claude Desktop and Claude Code configs
+This is only needed for local development. The Claude Desktop and Claude Code CLI configs
 pass these values directly via the `env` block.
 
 ### Packaging & Distribution
