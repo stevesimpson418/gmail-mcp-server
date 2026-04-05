@@ -1,42 +1,17 @@
-name: Release MCP
+name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [main]
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
-  release:
+  release-please:
     runs-on: ubuntu-latest
     steps:
-      - name: Parse tag
-        id: meta
-        run: |
-          TAG="${GITHUB_REF#refs/tags/}"
-          VERSION="${TAG#v}"
-          if [[ -z "$VERSION" ]]; then
-            echo "::error::Tag '${TAG}' is not in expected format v<version>"
-            exit 1
-          fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: googleapis/release-please-action@v4
         with:
-          fetch-depth: 0
-
-      - name: Generate changelog
-        env:
-          RELEASE_TAG: ${{ steps.meta.outputs.tag }}
-        run: bash scripts/generate-changelog.sh "$RELEASE_TAG" > changelog.md
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.meta.outputs.tag }}
-          name: "v${{ steps.meta.outputs.version }}"
-          body_path: changelog.md
+          release-type: python
